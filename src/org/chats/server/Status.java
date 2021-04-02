@@ -1,7 +1,9 @@
 package org.chats.server;
 
-public enum Status{
-    CONNECTED,
-    ERROR,
-    DISCONECTED
+public class Status{
+
+    public static final String ONLINE = "online";
+    public static final String OFFLINE = "offline";
+
+    private Status(){}
 }

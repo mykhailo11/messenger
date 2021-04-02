@@ -2,6 +2,8 @@ package org.chats.proxy;
 
 import org.chats.server.Status;
 import org.chats.server.Commands;
+import org.chats.messenger.Message;
+import org.chats.messenger.Field;
 import java.net.Socket;
 import java.util.Objects;
 import java.io.BufferedReader;
@@ -11,9 +13,11 @@ import java.io.IOException;
 
 public class Assistant extends Thread{
 
+    private static Mongol mongo;
     private String username;
+    private boolean verified;
     private Socket client;
-    private Status connection;
+    private String connection;
     private BufferedReader in;
     private PrintWriter out;
     
@@ -30,27 +34,40 @@ public class Assistant extends Thread{
                 hand = in.readLine();
             }while (Objects.isNull(hand));
             if (hand.equals(Commands.CONNECT)){
-                connection = Status.CONNECTED;
-                System.out.println("Connection established");
+                username = in.readLine();
+                verified = mongo.verifyUser(username, in.readLine());
+                if (verified){
+                    connection = Status.ONLINE;
+                    out.println(connection);
+                    out.flush();
+                }else{
+                    System.out.println("Uverified user");
+                }
             }else{
-                connection = Status.DISCONECTED;
+                connection = Status.OFFLINE;
             }
-            out.println(connection);
-            out.flush();
         }catch (IOException e){
             System.out.println("Unable to establish data stream");
-            connection = Status.ERROR;
+            connection = Status.OFFLINE;
         }
     }
-    public Status getConnection(){
+    public static void setMongo(Mongol c){
+        mongo = c;
+    }
+    public String getConnection(){
         return connection;
     }
+    public boolean isVerified(){
+        return verified;
+    }
     private void process(String intend){
-        System.out.println(intend);
+        if (intend.equals(Commands.ADDMESSAGE)){
+            //Doing something
+        }
     }
     @Override
     public void run(){
-        while (connection.equals(Status.CONNECTED)){
+        while (connection.equals(Status.ONLINE) && verified){
             
             String intend;
 
@@ -62,9 +79,12 @@ public class Assistant extends Thread{
                 process(intend);
             }catch (IOException e){
                 System.out.println("Unable to communicate with cient");
-                connection = Status.ERROR;
+                connection = Status.OFFLINE;
                 break;
             }
+        }
+        if (!verified){
+            System.out.println("Verification error");
         }
         System.out.println("Connection ended");
     }

@@ -8,23 +8,41 @@ public class Message {
     private String reciever;
     private String content;
     private String date;
-    private MessState state;
+    private String state;
 
     public Message(String s, String r){
         sender  = s;
         reciever = r;
         content = "";
         date = now().toString();
-        state = MessState.QUEUED;
+        state = "queued";
+    }
+    public String getSender(){
+        return sender;
+    }
+    public String getReciever(){
+        return reciever;
     }
     public void setContent(String cont){
         content = cont;
     }
-    public void setState(MessState s){
+    public String getContent(){
+        return content;
+    }
+    public void setState(String s){
         state = s;
+    }
+    public String getState(){
+        return state;
+    }
+    public void setDate(String d){
+        date = d;
+    }
+    public String getDate(){
+        return date;
     }
     @Override
     public String toString(){
-        return ("----------%n" + "Sender:%n" + sender + "%n" + "Reciever:%n" + reciever + "%n" + "Content:%n" + content + "%n" + "Date:%n" + date + "State:%n" + state + "%n" + "----------%n");
+        return ("sender:" + sender + "%n" + "reciever:" + reciever + "%n" + "content:" + content + "%n" + "date:" + date + "%n" + "state:" + state);
     }
 }

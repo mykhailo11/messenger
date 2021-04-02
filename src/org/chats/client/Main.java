@@ -10,8 +10,7 @@ public class Main{
         Messenger mess;
 
         try{
-            mess = new Messenger("user", "pass", HOST, PORT);
-            mess.sendMessage("Hello");
+            mess = new Messenger("mishania", "11112222", HOST, PORT);
             mess.end();
         }catch (UnverifiedUserException e){
             System.out.println("Try again");
