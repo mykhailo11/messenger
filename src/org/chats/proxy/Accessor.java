@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.io.IOException;
 import java.net.ServerSocket;
-import javax.net.ssl.;
 import org.chats.server.Status;
 
 public class Accessor {
