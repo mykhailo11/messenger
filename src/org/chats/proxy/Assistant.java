@@ -1,15 +1,14 @@
 package org.chats.proxy;
 
 import org.chats.server.Status;
+import org.chats.messenger.Login;
 import org.chats.server.Commands;
-import org.chats.messenger.Message;
-import org.chats.messenger.Field;
 import java.net.Socket;
 import java.util.Objects;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
+import org.bson.Document;
 
 public class Assistant extends Thread{
 
@@ -18,27 +17,29 @@ public class Assistant extends Thread{
     private boolean verified;
     private Socket client;
     private String connection;
-    private BufferedReader in;
-    private PrintWriter out;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
     
     public Assistant(Socket c){
         client = c;
         try{
 
             String hand;
+            Document info;
 
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out = new PrintWriter(client.getOutputStream());
+            in = new ObjectInputStream(client.getInputStream());
+            out = new ObjectOutputStream(client.getOutputStream());
             System.out.println("Data stream established");
             do{
-                hand = in.readLine();
+                hand = in.readObject().toString();
             }while (Objects.isNull(hand));
             if (hand.equals(Commands.CONNECT)){
-                username = in.readLine();
-                verified = mongo.verifyUser(username, in.readLine());
+                info = (Document)in.readObject();
+                verified = mongo.verifyUser(info);
                 if (verified){
+                    username = info.get(Login.USERNAME).toString();
                     connection = Status.ONLINE;
-                    out.println(connection);
+                    out.writeObject(connection);
                     out.flush();
                 }else{
                     System.out.println("Uverified user");
@@ -49,6 +50,9 @@ public class Assistant extends Thread{
         }catch (IOException e){
             System.out.println("Unable to establish data stream");
             connection = Status.OFFLINE;
+        }catch (ClassNotFoundException e){
+            System.out.println("Incorrect data type passed");
+            connection = Status.OFFLINE;
         }
     }
     public static void setMongo(Mongol c){
@@ -57,13 +61,34 @@ public class Assistant extends Thread{
     public String getConnection(){
         return connection;
     }
+    public String getUsername(){
+        return username;
+    }
     public boolean isVerified(){
         return verified;
     }
     private void process(String intend){
         if (intend.equals(Commands.ADDMESSAGE)){
-            //Doing something
+            try{
+                mongo.addMessage((Document)in.readObject());
+            }catch (ClassNotFoundException e){
+                System.out.println("Unable to extract message");
+            }catch (IOException e){
+                System.out.println("Unable to get access to stream");
+            }
+        }else if (intend.equals(Commands.GETMESSAGES)){
+            try{
+                out.writeObject(mongo.getMessages(in.readObject().toString()));
+                out.flush();
+            }catch (ClassNotFoundException e){
+                System.out.println("Unable to define username");
+            }catch (IOException e){
+                System.out.println("Unable to get access to stream");
+            }
+        }else if (intend.equals(Commands.DISCONNECT)){
+            connection = Status.OFFLINE;
         }
+        
     }
     @Override
     public void run(){
@@ -73,14 +98,16 @@ public class Assistant extends Thread{
 
             try{
                 do{
-                    intend = in.readLine();
+                    intend = in.readObject().toString();
                 }while (Objects.isNull(intend));
                 System.out.println("Got message");
                 process(intend);
             }catch (IOException e){
                 System.out.println("Unable to communicate with cient");
                 connection = Status.OFFLINE;
-                break;
+            }catch (ClassNotFoundException e){
+                System.out.println("Unable to define command");
+                connection = Status.OFFLINE;
             }
         }
         if (!verified){

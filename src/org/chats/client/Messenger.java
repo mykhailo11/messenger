@@ -2,60 +2,62 @@ package org.chats.client;
 
 import org.chats.server.Status;
 import org.chats.server.Commands;
+import org.chats.messenger.Login;
 import java.net.Socket;
 import java.util.Objects;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
+import org.bson.Document;
 
 public class Messenger{
 
     private String username;
     private Socket user;
-    private BufferedReader in;
-    private PrintWriter out;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
     private String state;
     
     public Messenger(String username, String password, String host, int port) throws UnverifiedUserException{
         connectToAccessor(host, port);
-        try{
-            verify(username, password);
-        }catch (UnverifiedUserException e){
-            System.out.println("Ending connection");
+        verify(username, password);
+        if (!state.equals(Status.ONLINE)){
+            throw new UnverifiedUserException("Verification error");
         }
     }
     private void connectToAccessor(String host, int port){
         try{
             user = new Socket(host, port);
             System.out.println("Connection initiated");
-            in = new BufferedReader(new InputStreamReader(user.getInputStream()));
-            out = new PrintWriter(user.getOutputStream());
+            in = new ObjectInputStream(user.getInputStream());
+            out = new ObjectOutputStream(user.getOutputStream());
         }catch (IOException e){
             System.out.println("Unable to establish connection");
         }
     }
-    private void verify(String username, String password) throws UnverifiedUserException{
+    private void verify(String username, String password){
 
-        String hand;
+        Document hand;
 
         try{
-            System.out.println("Trying to connect");
-            out.println(Commands.CONNECT);
-            out.println(username);
-            out.println(password);
+            System.out.println("Trying to verify");
+            out.writeObject(Commands.CONNECT);
+            out.writeObject(new Document().append(Login.USERNAME, username).append(Login.PASSWORD, password));
             out.flush();
             do{
-                hand = in.readLine();
+                hand = (Document)in.readObject();
             }while (Objects.isNull(hand));
-            if (hand.equals(Status.ONLINE)){
+            if (hand.get("status").toString().equals(Status.ONLINE)){
                 state = Status.ONLINE;
                 System.out.println("Connection established: " + hand);
             }else{
-                throw new UnverifiedUserException("Connection failed");
+                state = Status.OFFLINE;
             }
         }catch (IOException e){
             System.out.println("Unable to establish connection");
+        }catch (ClassNotFoundException e){
+            System.out.println("Unable to process response");
         }
     }
     public String getState(){
@@ -64,30 +66,42 @@ public class Messenger{
         }else if(state.equals(Status.OFFLINE)){
             return Status.OFFLINE;
         }else{
-            return "Error";
+            return "error";
         }
     }
     public String getUserName(){
         return username;
     }
-    public void sendMessage(String mess){
-        out.println(mess);
-        out.flush();
+    public void sendMessage(Document mess){
+        try{
+            out.writeObject(Commands.ADDMESSAGE);
+            out.writeObject(mess);
+            out.flush();
+        }catch (IOException e){
+            System.out.println("Unable to send message");
+        }
     }
-    public String getMessage(){
+    public ArrayList<Document> getMessages(){
 
-        String result = "";
+        ArrayList<Document> result = null;
 
         try{
-            result = in.readLine();
+            out.writeObject(Commands.GETMESSAGES);
+            out.flush();
+            do{
+                result = (ArrayList<Document>)in.readObject();
+            }while (Objects.isNull(result));
         }catch (IOException e){
             System.out.println("Unable to get message");
+        }catch (ClassNotFoundException e){
+            System.out.println("Unable to process response");
         }
         return result;
     }
     public void end(){
         try{
             user.close();
+            state = Status.OFFLINE;
             System.out.println("Client has been closed successfully");
         }catch (IOException e){
             System.out.println("Client has been already closed(?)");

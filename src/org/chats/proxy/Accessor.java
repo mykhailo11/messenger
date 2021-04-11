@@ -32,10 +32,12 @@ public class Accessor {
                 if (connected.size() < 10){
                     System.out.println("Checking for clients");
                     connected.add(new Assistant(access.accept()));
-                    connected.get(connected.size() - 1).start();    
+                    System.out.println("Client accepted. Assistant has been provided");
+                    connected.get(connected.size() - 1).start(); 
+                    checkForLazyAssistants();  
                 }
             }catch (IOException e){
-                System.out.println("Unable to get clients (server may be closed)");
+                System.out.println("Unable to get clients (server is possibly closed)");
                 end();
                 break;
             }
@@ -44,6 +46,7 @@ public class Accessor {
     private void checkForLazyAssistants(){
         for (Assistant assistant : connected) {
             if (assistant.getConnection().equals(Status.OFFLINE) && !assistant.isAlive()){
+                System.out.println("Lazy assistant detected");
                 connected.remove(connected.indexOf(assistant));
             }
         }
