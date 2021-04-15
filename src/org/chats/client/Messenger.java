@@ -52,6 +52,12 @@ public class Messenger{
             System.out.println("Unable to establish data stream");
         }
     }
+    public String getUsername(){
+        return username;
+    }
+    public String getConnection(){
+        return state;
+    }
     /**
      * Method verifies user
      * @param uname - username

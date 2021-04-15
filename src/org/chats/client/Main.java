@@ -15,7 +15,7 @@ public class Main{
         mess = new Messenger(HOST, PORT);
         mess.verify("mishania", "11112222");
         mess.listener();
-        mess.sendMessage(new Document().append(Fields.SENDER, "mishania").append(Fields.RECIEVER, "anouser").append(Fields.CONTENT, "Hey you!! r u listen??").append(Fields.DATE, "12.01.2001"));
+        mess.sendMessage(new Document().append(Fields.SENDER, "mishania").append(Fields.RECIEVER, "anouser").append(Fields.CONTENT, "Hello... It's me...").append(Fields.DATE, "12.01.2001"));
         mess.listener();
         mess.end();
     }
