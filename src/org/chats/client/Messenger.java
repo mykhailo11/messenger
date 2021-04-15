@@ -118,12 +118,13 @@ public class Messenger{
     private void process(String response){
         if (response.equals(Responses.CONNECTION)){
             try{
-                verified = ((String)in.readObject()).equals(Status.ONLINE);
+                state = (String)in.readObject();
+                System.out.println("Connection:" + state);
             }catch (IOException e){
-                state = Status.OFFLINE;
                 System.out.println(e.getMessage());
             }catch (ClassNotFoundException e){
-                System.out.println("Unknown protocol detected");
+                state = Status.OFFLINE;
+                System.out.println("Undefined type");
             }
         }else if (response.equals(Responses.MESSAGEPACK)){
             //Saving array of messages
@@ -131,6 +132,15 @@ public class Messenger{
             //Adding message to the existing array
         }else if (response.equals(Responses.ADDED)){
             System.out.println("Message successfuly has been sent");
+        }else if (response.equals(Responses.VERIFICATION)){
+            try{
+                verified = (Boolean)in.readObject();
+            }catch (IOException e){
+                state = Status.OFFLINE;
+                System.out.println(e.getMessage());
+            }catch (ClassNotFoundException e){
+                System.out.println("Unknown protocol detected");
+            }
         }
     }
     /**
@@ -161,13 +171,18 @@ public class Messenger{
     /**
      * Method "asks" the server to close connection
      */
-    public void end(){
+    public void end() throws CloseAttemptException{
         try{
             out.writeObject(Commands.DISCONNECT);
             out.flush();
-            user.close();
-            state = Status.OFFLINE;
-            System.out.println("Client has been closed successfully");
+            requested = true;
+            listener();
+            if (state.equals(Status.OFFLINE)){
+                user.close();
+                System.out.println("Client has been closed successfully");
+            }else{
+                throw new CloseAttemptException("Unable to close socket: server doesn't respond");
+            }
         }catch (IOException e){
             System.out.println("Client has been already closed(?)");
         }

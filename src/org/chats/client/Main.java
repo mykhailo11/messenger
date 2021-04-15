@@ -13,10 +13,15 @@ public class Main{
         Messenger mess;
 
         mess = new Messenger(HOST, PORT);
+        mess.listener();
         mess.verify("mishania", "11112222");
         mess.listener();
         mess.sendMessage(new Document().append(Fields.SENDER, "mishania").append(Fields.RECIEVER, "anouser").append(Fields.CONTENT, "Hello... It's me...").append(Fields.DATE, "12.01.2001"));
         mess.listener();
-        mess.end();
+        try{
+            mess.end();
+        }catch (CloseAttemptException e){
+            System.out.println(e.getMessage());
+        }
     }
 }

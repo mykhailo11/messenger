@@ -8,6 +8,7 @@ public class Responses {
 
     public static final String ADDED = "|added|";
     public static final String CONNECTION = "|connection|";
+    public static final String VERIFICATION = "|verification|";
     public static final String MESSAGEPACK = "|pack|";
     public static final String MESSAGE = "|message|";
     /**

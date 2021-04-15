@@ -46,6 +46,9 @@ public class Assistant extends Thread{
                 out = new ObjectOutputStream(client.getOutputStream());
                 in = new ObjectInputStream(client.getInputStream());
                 connection = Status.ONLINE;
+                out.writeObject(Responses.CONNECTION);
+                out.writeObject(connection);
+                out.flush();
             }catch (IOException e){
                 connection = Status.OFFLINE;
                 System.out.println(e.getMessage());
@@ -96,12 +99,12 @@ public class Assistant extends Thread{
             verified = mongo.getData(Mongo.userQuery(username, (String)in.readObject()), Mongo.USERSCOLL).size() == 1;
             if (verified){
                 mongo.updateData(Mongo.userQuery(username), Mongo.userUpdateState(Status.ONLINE), Mongo.USERSCOLL);
-                out.writeObject(Responses.CONNECTION);
-                out.writeObject(connection);
-                out.flush();
             }else{
                 mongo.updateData(Mongo.userQuery(username), Mongo.userUpdateState(Status.OFFLINE), Mongo.USERSCOLL);
             }
+            out.writeObject(Responses.VERIFICATION);
+            out.writeObject(verified);
+            out.flush();
         }catch (ClassNotFoundException e){
             verified = false;
             System.out.println("Unknown protocol detected");
