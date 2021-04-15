@@ -2,11 +2,13 @@ package org.chats.proxy;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.client.model.Filters;
 import java.util.ArrayList;
 import org.bson.Document;
-import org.chats.messenger.Field;
+import org.bson.conversions.Bson;
 
+/**
+ * Class intended for simple communication with MongoDB server
+ */
 public class Mongol{
     
     protected MongoClient mongo;
@@ -16,9 +18,14 @@ public class Mongol{
     private String mongoport;
     protected String mongodb;
 
-    private String collusers = "users";
-    private String collmessages = "messages";
-
+    /**
+     * Basic constructor
+     * @param muser - database user
+     * @param mpass - password
+     * @param mhost - MongoDB instance IP address
+     * @param mport - MongoDB instance port
+     * @param mdb - database name
+     */
     public Mongol(String muser, String mpass, String mhost, String mport, String mdb){
         mongouser = muser;
         mongopass = mpass;
@@ -26,31 +33,41 @@ public class Mongol{
         mongoport = mport;
         mongodb = mdb;
         mongo = new MongoClient(new MongoClientURI("mongodb://" + mongouser + ":" + mongopass + "@" + mongohost + ":" + mongoport + "/?authSource=" + mongodb));
+        System.out.println("Mongol is active");
     }
-    public synchronized boolean verifyUser(Document info){
+    /**
+     * Method that adds document to the MongoDB database
+     * @param doc - document to be added
+     * @param coll - collection the document to be added
+     */
+    public synchronized void addData(Document doc, String coll){
+        mongo.getDatabase(mongodb).getCollection(coll).insertOne(doc);
+    }
+    /**
+     * Method retrieves data from the database
+     * @param query - result matches this specific filters
+     * @param coll - collection the data to be retrieved from
+     * @return Returns list of documents that match query
+     */
+    public synchronized ArrayList<Document> getData(Bson query, String coll){
         
-        ArrayList<Document> res = new ArrayList<>();
+        ArrayList<Document> docs = new ArrayList<>();
 
-        mongo.getDatabase(mongodb).getCollection(collusers).find(info).into(res);
-        return (res.size() == 1);
+        mongo.getDatabase(mongodb).getCollection(coll).find(query).into(docs);
+        return docs;
     }
-    public synchronized void addUser(Document info){
-        mongo.getDatabase(mongodb).getCollection(collusers).insertOne(info);
+    /**
+     * Method updates data in the specified collection
+     * @param query - all the updating documents must match this filters
+     * @param doc - update statements
+     * @param coll - collection the documents to be updated
+     */
+    public synchronized void updateData(Bson query, Bson doc, String coll){
+        mongo.getDatabase(mongodb).getCollection(coll).updateMany(query, doc);
     }
-    public synchronized ArrayList<Document> getMessages(String username){
-
-        ArrayList<Document> res = new ArrayList<>();
-
-        mongo.getDatabase(mongodb).getCollection(collmessages).find(Filters.or(Filters.eq(Field.SENDER, username), Filters.eq(Field.RECIEVER, username))).into(res);
-        if (!res.isEmpty()){
-            return res;
-        }else{
-            return new ArrayList<>();
-        }
-    }
-    public void addMessage(Document mess){
-        mongo.getDatabase(mongodb).getCollection(collmessages).insertOne(mess);
-    }
+    /**
+     * Method closes connection
+     */
     public void end(){
         mongo.close();
     }

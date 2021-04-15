@@ -1,19 +1,22 @@
 package org.chats.client;
 
+import org.bson.Document;
+import org.chats.messenger.Fields;
+
 public class Main{
 
-    private static final String HOST = "localhost";
+    private static final String HOST = "192.168.0.103";
     private static final int PORT = 50000;
 
     public static void main(String[] args) {
 
         Messenger mess;
 
-        try{
-            mess = new Messenger("mishania", "11112222", HOST, PORT);
-            mess.end();
-        }catch (UnverifiedUserException e){
-            System.out.println("Try again");
-        }
+        mess = new Messenger(HOST, PORT);
+        mess.verify("mishania", "11112222");
+        mess.listener();
+        mess.sendMessage(new Document().append(Fields.SENDER, "mishania").append(Fields.RECIEVER, "anouser").append(Fields.CONTENT, "Hey you!! r u listen??").append(Fields.DATE, "12.01.2001"));
+        mess.listener();
+        mess.end();
     }
 }

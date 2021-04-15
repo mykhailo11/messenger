@@ -1,12 +1,16 @@
 package org.chats.server;
 
+/**
+ * Server commands strings. Can be modified but must be unique
+ */
 public final class Commands {
 
-    public static final String CONNECT = "CONNECT";
-    public static final String ADDUSER  = "ADDUSER";
-    public static final String ADDMESSAGE = "ADDMESSAGE";
-    public static final String GETMESSAGES = "GETMESSAGES";
-    public static final String DISCONNECT = "DISCONNECT";
+    public static final String VERIFY = "|verify|";
+    public static final String ADDUSER  = "|adduser|";
+    public static final String ADDMESSAGE = "|addmessage|";
+    public static final String GETMESSAGES = "|getmessages|";
+    public static final String DISCONNECT = "|disconnect|";
     
     private Commands(){}
+    
 }
