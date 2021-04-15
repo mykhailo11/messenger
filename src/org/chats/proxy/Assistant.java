@@ -59,6 +59,12 @@ public class Assistant extends Thread{
     public static void setMongol(Mongol mongol){
         mongo = mongol;
     }
+    public String getConnection(){
+        return connection;
+    }
+    public String getUsername(){
+        return username;
+    }
     /**
      * Method that processes client request and defines
      * custom protocol
