@@ -33,8 +33,8 @@ public class Messenger{
      */
     public Messenger(String host, int port){
         connectToAccessor(host, port);
-        state = Status.ONLINE;
-        requested = false;
+        requested = true;
+        listener();
         verified = false;
     }
     /**
@@ -117,30 +117,36 @@ public class Messenger{
      */
     private void process(String response){
         if (response.equals(Responses.CONNECTION)){
-            try{
-                state = (String)in.readObject();
-                System.out.println("Connection:" + state);
-            }catch (IOException e){
-                System.out.println(e.getMessage());
-            }catch (ClassNotFoundException e){
-                state = Status.OFFLINE;
-                System.out.println("Undefined type");
-            }
-        }else if (response.equals(Responses.MESSAGEPACK)){
+            setConnection();
+        }else if (verified && response.equals(Responses.MESSAGEPACK)){
             //Saving array of messages
-        }else if (response.equals(Responses.NEWMESS)){
+        }else if (verified && response.equals(Responses.NEWMESS)){
             //Adding message to the existing array
-        }else if (response.equals(Responses.ADDED)){
+        }else if (verified && response.equals(Responses.ADDED)){
             System.out.println("Message successfuly has been sent");
         }else if (response.equals(Responses.VERIFICATION)){
-            try{
-                verified = (Boolean)in.readObject();
-            }catch (IOException e){
-                state = Status.OFFLINE;
-                System.out.println(e.getMessage());
-            }catch (ClassNotFoundException e){
-                System.out.println("Unknown protocol detected");
-            }
+            setVerified();
+        }
+    }
+    private void setConnection(){
+        try{
+            state = (String)in.readObject();
+            System.out.println("Connection:" + state);
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }catch (ClassNotFoundException e){
+            state = Status.OFFLINE;
+            System.out.println("Undefined type");
+        }
+    }
+    private void setVerified(){
+        try{
+            verified = (Boolean)in.readObject();
+        }catch (IOException e){
+            state = Status.OFFLINE;
+            System.out.println(e.getMessage());
+        }catch (ClassNotFoundException e){
+            System.out.println("Unknown protocol detected");
         }
     }
     /**
@@ -148,7 +154,7 @@ public class Messenger{
      * been sent
      */
     public void listener(){
-        if (requested && state.equals(Status.ONLINE)){
+        if (requested){
 
             Object response;
 
