@@ -1,0 +1,31 @@
+*{
+    -fx-background-insets: 0, 0, 0;
+}
+.body{
+    -fx-background-image: url("../images/logo.jpg");
+    /*-fx-background-color: rgb(24, 20, 26);*/
+    -fx-background-attachment: fixed;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+}
+ScrollBar{
+    -fx-pref-width: 5px;
+    -fx-background: none;
+    -fx-background-color: rgb(253, 113, 78);
+    -fx-padding: 0;
+}
+ScrollBar .increment-button, ScrollBar .decrement-button{
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+}
+ScrollBar .thumb{
+    -fx-background-radius: 0;
+    -fx-background-color: rgb(99, 23, 81);
+    -fx-margin: 0;
+}
+ScrollBar .thumb:hover{
+    -fx-background-color: rgb(255, 255, 255);
+}
+ScrollBar .thumb:pressed{
+    -fx-background-color: rgb(112, 55, 17);
+}

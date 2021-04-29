@@ -14,7 +14,7 @@ public class Mongo {
 
     public static final String MONGOUSER = "chatsuser";
     public static final String MONGOPASS = "1Qh56U78";
-    public static final String MONGOHOST = "192.168.0.103";
+    public static final String MONGOHOST = "192.168.0.109";
     public static final String MONGOPORT = "27017";
     public static final String MONGODB = "chatsDB";
 
@@ -39,6 +39,9 @@ public class Mongo {
      */
     public static Bson messUpdateState(String state){
         return Updates.set(Fields.STATE, state);
+    }
+    public static Bson undeliveredMessages(String username){
+        return Filters.and(Filters.eq(Fields.RECIEVER, username), Filters.eq(Fields.STATE, MessState.QUEUED));
     }
     /**
      * The query is used for updating user state

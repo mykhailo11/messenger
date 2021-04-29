@@ -18,7 +18,7 @@ import org.bson.Document;
  * Class that handles client requests. Works in background.
  * Implements messenger server logics
  */
-public class Assistant extends Thread{
+public class Assistant{
 
     private static Mongol mongo;
     private String username;
@@ -83,9 +83,15 @@ public class Assistant extends Thread{
             }else if (intend.equals(Commands.GETMESSAGES) && verified){
                 sendMessages();
             }else if (intend.equals(Commands.DISCONNECT)){
-                mongo.end();
                 mongo.updateData(Mongo.userQuery(username), Mongo.userUpdateState(Status.OFFLINE), Mongo.USERSCOLL);
                 connection = Status.OFFLINE;
+                try{
+                    out.writeObject(Responses.CONNECTION);
+                    out.writeObject(connection);
+                    out.flush();
+                }catch (IOException e){
+                    System.out.println(e.getMessage());
+                }
             }else{
                 System.out.println("Incorrect request");
             }
@@ -150,23 +156,53 @@ public class Assistant extends Thread{
                 try{
                     out.writeObject(Responses.MESSAGE);
                     out.writeObject(m);
-                    out.flush();
                     mongo.updateData(m, Mongo.messUpdateState(MessState.DELIVERED), Mongo.MESSCOLL);
                 }catch (IOException e){
                     connection = Status.OFFLINE;
                     System.out.println(e.getMessage());
                 }
             } );
+            out.writeObject(Responses.PACKEND);
+            out.flush();
         }catch (IOException e){
             connection = Status.OFFLINE;
             System.out.println(e.getMessage());
         }
     }
     /**
+     * Additional method for notifier that sends new messages
+     */
+    private void sendNew(){
+
+        ArrayList<Document> newmess = mongo.getData(Mongo.undeliveredMessages(username), Mongo.MESSCOLL);
+
+        if (!newmess.isEmpty()){
+            try{
+                System.out.println("Extra");
+                out.writeObject(Responses.NEWMESSPACK);
+                newmess.forEach(m -> {
+                    try{
+                        out.writeObject(Responses.MESSAGE);
+                        out.writeObject(m);
+                        mongo.updateData(m, Mongo.messUpdateState(MessState.DELIVERED), Mongo.MESSCOLL);
+                    }catch (IOException e){
+                        System.out.println(e.getMessage());
+                        connection = Status.OFFLINE;
+                    }
+                });
+                out.writeObject(Responses.PACKEND);
+                out.flush();
+            }catch (IOException e){
+                System.out.println(e.getMessage());
+                connection = Status.OFFLINE;
+            }
+        }            
+    }
+    /**
      * Thread main method (loop). Request listener
      */
-    @Override
-    public void run(){
+    public void listen(){
+        System.out.println("Listener is running");
         while (connection.equals(Status.ONLINE)){
             
             Object intend;
@@ -188,5 +224,23 @@ public class Assistant extends Thread{
             System.out.println("Verification error");
         }
         System.out.println("Connection ended");
+    }
+    /**
+     * The method allows to send extra messages without
+     * client request. Should be implemented as a thread
+     */
+    public void checkForNew(){
+        System.out.println("Notifier is running");
+        while (connection.equals(Status.ONLINE)){
+            if (verified){
+                sendNew();
+            }
+            try{
+                Thread.sleep(100);
+            }catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+        }
+        System.out.println("Notifier ended");
     }
 }

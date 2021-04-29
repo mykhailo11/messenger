@@ -1,0 +1,47 @@
+#loginForm{
+    -fx-padding: 20px;
+    -fx-background-color: rgba(31, 13, 37, 0.9);
+}
+#header{
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 15, 0, 0, 5);
+    -fx-background-color: rgb(31, 13, 37);
+    -fx-background-radius: 10px;
+    -fx-padding: 20px;
+}
+#header Label{
+    -fx-text-fill: rgb(255, 255, 255);
+    -fx-font-size: 36px;
+}
+#header #txt{
+    -fx-font-size: 24px;
+}
+#header #logo Label{
+    -fx-text-fill: rgb(224, 166, 89);
+    -fx-font-weight: 500;
+    -fx-font-size: 36px;
+}
+#header #logo #frst{
+    -fx-text-fill: rgb(224, 89, 89);
+    -fx-font-weight: 900;
+}
+#header #logo::first-letter{
+    -fx-text-fill: rgb(230, 87, 82);
+}
+Button{
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-background-radius: 0px;
+    -fx-border-width: 0px 0px 3px 0px;
+    -fx-border-color: rgb(170, 86, 86);
+    -fx-text-fill: rgb(224, 166, 89);
+}
+Button:hover{
+    -fx-border-color: rgb(255, 255, 255);
+}
+TextField{
+    -fx-background-color: rgba(255, 255, 255, 0.3);
+    -fx-background-radius: 10px;
+    -fx-text-fill: rgb(49, 14, 45);
+}
+TextField:empty{
+    -fx-promt-text-fill: white;
+}

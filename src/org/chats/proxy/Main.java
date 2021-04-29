@@ -14,5 +14,6 @@ public class Main {
         server = new Accessor(PORT);
         Assistant.setMongol(mongol);
         server.start();
+        mongol.end();
     }
 }

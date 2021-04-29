@@ -12,7 +12,7 @@ import java.net.ServerSocket;
  */
 public class Accessor {
 
-    private ArrayList<Assistant> connected;
+    private ArrayList<Unit> connected;
     private ServerSocket access;
     
     /**
@@ -48,8 +48,7 @@ public class Accessor {
                 //This limit is optional
                 if (connected.size() < 10){
                     System.out.println("Checking for clients");
-                    connected.add(new Assistant(access.accept()));
-                    connected.get(connected.size() - 1).start();  
+                    connected.add(new Unit(new Assistant(access.accept()))); 
                 }
             }catch (IOException e){
                 System.out.println("Unable to get clients (server is possibly closed)");
@@ -57,17 +56,17 @@ public class Accessor {
                 break;
             }
             //Checking for lazy assistants and punishing them
-            checkForLazyAssistants(); 
+            checkForLazyUnits(); 
         }
     }
     /**
      * Method removes unused assistants from list
      */
-    private void checkForLazyAssistants(){
-        for (Assistant assistant : connected) {
-            if (!assistant.isAlive()){
-                System.out.println("Lazy assistant detected");
-                connected.remove(connected.indexOf(assistant));
+    private void checkForLazyUnits(){
+        for (Unit u : connected) {
+            if (!u.isAlive()){
+                System.out.println("Lazy unit detected");
+                connected.remove(connected.indexOf(u));
             }
         }
     }
