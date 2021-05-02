@@ -1,73 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.geometry.Rectangle2D?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" maxHeight="800.0" styleClass="body" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="TOP_CENTER" maxHeight="800.0" spacing="10.0" styleClass="body" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox fx:id="userForm" alignment="TOP_CENTER" maxHeight="800.0" maxWidth="800.0" spacing="10.0" VBox.vgrow="ALWAYS">
          <children>
-            <HBox fx:id="chats" alignment="CENTER" maxHeight="-Infinity" prefHeight="50.0" spacing="10.0" VBox.vgrow="NEVER">
-               <children>
-                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="user">
-                     <image>
-                        <Image url="@../../../../../../Projects/Learning/media/images/email.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" styleClass="user">
-                     <image>
-                        <Image url="@../../../../../../Projects/Learning/media/images/email.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="75.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true" styleClass="user">
-                     <image>
-                        <Image url="@../../../../../../Projects/Learning/media/images/email.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" styleClass="user">
-                     <image>
-                        <Image url="@../../../../../../Projects/Learning/media/images/email.png" />
-                     </image>
-                     <viewport>
-                        <Rectangle2D />
-                     </viewport>
-                  </ImageView>
-               </children>
+            <VBox fx:id="chats" alignment="CENTER" prefHeight="100.0" spacing="4.0" VBox.vgrow="NEVER">
                <VBox.margin>
                   <Insets top="-50.0" />
                </VBox.margin>
-            </HBox>
-            <HBox alignment="TOP_CENTER" depthTest="DISABLE" prefHeight="172.0" prefWidth="320.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox fx:id="notes" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin></VBox>
-                  <ScrollBar minWidth="-Infinity" orientation="VERTICAL" HBox.hgrow="NEVER">
-                     <cursor>
-                        <Cursor fx:constant="DEFAULT" />
-                     </cursor></ScrollBar>
+                  <HBox fx:id="users" alignment="CENTER" fillHeight="false" spacing="5.0" />
+                  <Label fx:id="current" />
                </children>
-               <VBox.margin>
-                  <Insets left="10.0" right="10.0" />
-               </VBox.margin>
-            </HBox>
+            </VBox>
+            <ScrollPane fx:id="notes" fitToWidth="true" hbarPolicy="NEVER" prefHeight="320.0" prefWidth="320.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+               <content>
+                  <VBox fx:id="msgs" alignment="CENTER" focusTraversable="true" snapToPixel="false" spacing="10.0">
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </ScrollPane>
             <HBox fx:id="mess" alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
                <children>
-                  <TextField maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="28.0" promptText="Enter your message..." HBox.hgrow="ALWAYS">
+                  <TextField fx:id="msg" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="28.0" promptText="Enter your message..." HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets right="10.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button mnemonicParsing="false" text="SEND">
+                  <Button fx:id="send" mnemonicParsing="false" onAction="#sendMess" text="SEND">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -78,9 +48,9 @@
                </VBox.margin>
             </HBox>
          </children>
+         <VBox.margin>
+            <Insets left="50.0" right="50.0" top="50.0" />
+         </VBox.margin>
       </VBox>
    </children>
-   <padding>
-      <Insets left="50.0" right="50.0" top="50.0" />
-   </padding>
 </VBox>

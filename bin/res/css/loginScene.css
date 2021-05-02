@@ -45,3 +45,6 @@ TextField{
 TextField:empty{
     -fx-promt-text-fill: white;
 }
+#state{
+    -fx-text-fill: rgb(224, 166, 89);
+}

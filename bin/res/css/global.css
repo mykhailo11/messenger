@@ -8,24 +8,26 @@
     -fx-background-repeat: no-repeat;
     -fx-background-size: cover;
 }
-ScrollBar{
+.scroll-bar{
     -fx-pref-width: 5px;
-    -fx-background: none;
-    -fx-background-color: rgb(253, 113, 78);
-    -fx-padding: 0;
+    -fx-background-color: transparent;
 }
-ScrollBar .increment-button, ScrollBar .decrement-button{
+.scroll-bar .track{
+    -fx-background-color: rgb(253, 113, 78);
+    
+}
+.scroll-bar .increment-button, ScrollBar .decrement-button{
     -fx-opacity: 0;
     -fx-pref-height: 0;
 }
-ScrollBar .thumb{
+.scroll-bar .thumb{
     -fx-background-radius: 0;
     -fx-background-color: rgb(99, 23, 81);
     -fx-margin: 0;
 }
-ScrollBar .thumb:hover{
+.scroll-bar .thumb:hover{
     -fx-background-color: rgb(255, 255, 255);
 }
-ScrollBar .thumb:pressed{
+.scroll-bar .thumb:pressed{
     -fx-background-color: rgb(112, 55, 17);
 }

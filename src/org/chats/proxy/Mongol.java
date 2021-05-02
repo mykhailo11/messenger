@@ -3,6 +3,8 @@ package org.chats.proxy;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import java.util.ArrayList;
+import java.util.Objects;
+
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -11,13 +13,24 @@ import org.bson.conversions.Bson;
  */
 public class Mongol{
     
-    protected MongoClient mongo;
-    protected String mongouser;
+    private static Mongol inst;
+
+    private MongoClient mongo;
+    private String mongouser;
     private String mongopass;
     private String mongohost;
     private String mongoport;
-    protected String mongodb;
+    private String mongodb;
 
+    /**
+     * Singleton initialization
+     */
+    public static synchronized Mongol init(String muser, String mpass, String mhost, String mport, String mdb){
+        if (Objects.isNull(inst)){
+            inst = new Mongol( muser, mpass, mhost, mport, mdb);
+        }
+        return inst;
+    }
     /**
      * Basic constructor
      * @param muser - database user
@@ -26,7 +39,7 @@ public class Mongol{
      * @param mport - MongoDB instance port
      * @param mdb - database name
      */
-    public Mongol(String muser, String mpass, String mhost, String mport, String mdb){
+    private Mongol(String muser, String mpass, String mhost, String mport, String mdb){
         mongouser = muser;
         mongopass = mpass;
         mongohost = mhost;

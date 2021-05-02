@@ -68,6 +68,9 @@ public class Assistant{
     public String getUsername(){
         return username;
     }
+    public boolean isVerified(){
+        return verified;
+    }
     /**
      * Method that processes client request and defines
      * custom protocol
@@ -108,6 +111,7 @@ public class Assistant{
             }else{
                 mongo.updateData(Mongo.userQuery(username), Mongo.userUpdateState(Status.OFFLINE), Mongo.USERSCOLL);
             }
+            System.out.println(verified);
             out.writeObject(Responses.VERIFICATION);
             out.writeObject(verified);
             out.flush();
@@ -202,45 +206,34 @@ public class Assistant{
      * Thread main method (loop). Request listener
      */
     public void listen(){
-        System.out.println("Listener is running");
-        while (connection.equals(Status.ONLINE)){
             
-            Object intend;
+        Object intend;
 
-            try{
-                do{
-                    intend = in.readObject();
-                }while (Objects.isNull(intend));
-                System.out.println("Got message: " + intend);
-                process((String)intend);
-            }catch (IOException e){
-                connection = Status.OFFLINE;
-                System.out.println("Unable to communicate with cient");
-            }catch (ClassNotFoundException e){
-                System.out.println("Unable to define command");
-            }
+        try{
+            do{
+                intend = in.readObject();
+            }while (Objects.isNull(intend));
+            System.out.println("Got message: " + intend);
+            process((String)intend);
+        }catch (IOException e){
+            connection = Status.OFFLINE;
+            System.out.println("Unable to communicate with cient");
+        }catch (ClassNotFoundException e){
+            System.out.println("Unable to define command");
         }
-        if (!verified){
-            System.out.println("Verification error");
-        }
-        System.out.println("Connection ended");
     }
     /**
      * The method allows to send extra messages without
      * client request. Should be implemented as a thread
      */
     public void checkForNew(){
-        System.out.println("Notifier is running");
-        while (connection.equals(Status.ONLINE)){
-            if (verified){
-                sendNew();
-            }
-            try{
-                Thread.sleep(100);
-            }catch (InterruptedException e){
-                Thread.currentThread().interrupt();
-            }
+        if (verified){
+            sendNew();
         }
-        System.out.println("Notifier ended");
+        try{
+            Thread.sleep(100);
+        }catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
     }
 }

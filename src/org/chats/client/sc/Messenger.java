@@ -3,6 +3,7 @@ package org.chats.client.sc;
 import org.chats.server.Status;
 import org.chats.messenger.Fields;
 import org.chats.server.Commands;
+import org.chats.server.MessState;
 import org.chats.server.Responses;
 
 import java.net.Socket;
@@ -64,6 +65,13 @@ public class Messenger{
     public boolean isVerified(){
         return verified;
     }
+    public ArrayList<Document> getPack(){
+
+        ArrayList<Document> res = new ArrayList<>(messages);
+
+        messages.forEach(mess -> mess.put(Fields.STATE, MessState.DELIVERED));
+        return res;
+    }
     /**
      * Method verifies user
      * @param uname - username
@@ -90,6 +98,10 @@ public class Messenger{
     public void sendMessage(Document mess){
         if (verified && !requested){
             try{
+                if (Objects.isNull(messages)){
+                    messages = new ArrayList<>();
+                }
+                messages.add(mess);
                 System.out.println("Sending message");
                 out.writeObject(Commands.ADDMESSAGE);
                 out.writeObject(mess);

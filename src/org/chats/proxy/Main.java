@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         
         Accessor server;
-        Mongol mongol = new Mongol(Mongo.MONGOUSER, Mongo.MONGOPASS, Mongo.MONGOHOST, Mongo.MONGOPORT, Mongo.MONGODB);
+        Mongol mongol = Mongol.init(Mongo.MONGOUSER, Mongo.MONGOPASS, Mongo.MONGOHOST, Mongo.MONGOPORT, Mongo.MONGODB);
 
         server = new Accessor(PORT);
         Assistant.setMongol(mongol);
