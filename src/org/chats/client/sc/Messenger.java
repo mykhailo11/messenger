@@ -26,6 +26,7 @@ public class Messenger{
     private String state;
     private boolean verified;
     private ArrayList<Document> messages;
+    private ArrayList<String> companions;
 
     private boolean requested;
     
@@ -64,6 +65,9 @@ public class Messenger{
     }
     public boolean isVerified(){
         return verified;
+    }
+    public ArrayList<String> getCompanions(){
+        return companions;
     }
     public ArrayList<Document> getPack(){
 
@@ -139,13 +143,32 @@ public class Messenger{
             while (!((String)in.readObject()).equals(Responses.PACKEND)){
                 Document mess = (Document)in.readObject();
                 messages.add(mess);
-                System.out.println(mess.get(Fields.CONTENT));
             }
         }catch (IOException e){
             System.out.println(e.getMessage());
         }catch (ClassNotFoundException e){
             System.out.println("Cannot define intend");
         }
+        getCompanions(hard);
+    }
+    /**
+     * Method defines usernames the current user has conversations with
+     */
+    private void getCompanions(boolean hard){
+        if (Objects.isNull(companions) || hard){
+            companions = new ArrayList<>();
+        }
+        messages.forEach(mess -> {
+
+            String sender = (String)mess.get(Fields.SENDER);
+            String reciever = (String)mess.get(Fields.RECIEVER);
+
+            if (!companions.contains(sender) && !sender.equals(username)){
+                companions.add(sender);
+            }else if (!companions.contains(reciever) && !reciever.equals(username)){
+                companions.add(reciever);
+            }
+        });
     }
     /**
      * Method that handles server responses after

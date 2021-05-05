@@ -27,22 +27,32 @@ Button{
 Button:hover{
     -fx-border-color: rgb(255, 255, 255);
 }
-#notes{
+#notes, #usrs{
     -fx-background-color: transparent;
 }
 #notes .viewport{
     -fx-background-color: rgba(255, 255, 255, 0.1);
     -fx-border-width: 0px 0px 0px 0px;
 }
-.icon{
+#usrs .viewport{
+    -fx-background-color: transparent;
+}
+.icon, .click{
     -fx-border-width: 0px, 0px, 0px, 0px;
     -fx-background-color: rgba(255, 255, 255, 0.1);
-    -fx-background-radius: 20px 20px 20px 20px;
-    -fx-pref-height: 40px;
-    -fx-pref-width: 40px;
-    -fx-font-size: 15px;
+    -fx-background-radius: 15px 15px 15px 15px;
+    -fx-pref-height: 30px;
+    -fx-pref-width: 30px;
+    -fx-font-size: 12px;
     -fx-font-weight: 900;
     -fx-text-fill: rgb(253, 113, 78);
+}
+.click{
+    -fx-background-color: rgb(0, 0, 0);
+    -fx-font-size: 12px;
+}
+.click:hover{
+    -fx-background-color: rgb(255, 255, 255);
 }
 .icon:hover{
     -fx-background-color: rgb(253, 113, 78);

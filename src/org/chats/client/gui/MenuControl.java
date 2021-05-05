@@ -45,57 +45,41 @@ public class MenuControl implements Subscriber{
             showMessages();
         }
     }
-    public void alarm(){
-        
-        ArrayList<Document> messages = messenger.getPack();
-
+    @FXML
+    public void addCompanion(){
         Platform.runLater(() -> {
-            users.getChildren().clear();
-            designIcons(getCompanions(messages)).forEach(but -> users.getChildren().add(but));
-        });
-        showMessages();
-    }
-    /**
-     * Methods returns list of users the client has conversation with
-     */
-    private ArrayList<String> getCompanions(ArrayList<Document> messages){
-        
-        ArrayList<String> companions = new ArrayList<>();
 
-        messages.forEach(mess -> {
+            String comp = msg.getText();
+            ArrayList<String> comps = messenger.getCompanions();
 
-            String sender = (String)mess.get(Fields.SENDER);
-            String reciever = (String)mess.get(Fields.RECIEVER);
-
-            if (!companions.contains(sender) && !sender.equals(messenger.getUsername())){
-                companions.add(sender);
-            }else if (!companions.contains(reciever) && !reciever.equals(messenger.getUsername())){
-                companions.add(reciever);
+            if (!comps.contains(comp) && !comp.equals(messenger.getUsername()) && !comp.isEmpty()){
+                messenger.getCompanions().add(comp);
+                users.getChildren().add(designIcon(comp));
             }
         });
-        return companions;
+    }
+    public void alarm(){
+        Platform.runLater(() -> {
+            users.getChildren().clear();
+            messenger.getCompanions().forEach(comp -> users.getChildren().add(designIcon(comp)));
+        });
+        showMessages();
     }
     /**
      * Method builds graphical representation of users the client
      * has conversation with
      */
-    private ArrayList<Button> designIcons(ArrayList<String> companions){
+    private Button designIcon(String companion){
         
-        ArrayList<Button> icons = new ArrayList<>();
+        Button icon = new Button(companion);
 
-        companions.forEach(comp -> {
-            
-            Button icon = new Button(comp);
-
-            icon.getStyleClass().add("icon");
-            icon.setTextOverrun(OverrunStyle.CLIP);
-            icon.setOnAction(e -> {
-                current.setText(((Button)e.getSource()).getText());
-                showMessages();
-            });
-            icons.add(icon);
+        icon.getStyleClass().add("icon");
+        icon.setTextOverrun(OverrunStyle.CLIP);
+        icon.setOnAction(e -> {
+            current.setText(((Button)e.getSource()).getText());
+            showMessages();
         });
-        return icons;
+        return icon;
     }
     private ArrayList<TextFlow> designBlocks(ArrayList<Document> messages){
         

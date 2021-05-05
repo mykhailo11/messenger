@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+
 <VBox alignment="TOP_CENTER" maxHeight="800.0" spacing="10.0" styleClass="body" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox fx:id="userForm" alignment="TOP_CENTER" maxHeight="800.0" maxWidth="800.0" spacing="10.0" VBox.vgrow="ALWAYS">
@@ -17,34 +18,43 @@
                   <Insets top="-50.0" />
                </VBox.margin>
                <children>
-                  <HBox fx:id="users" alignment="CENTER" fillHeight="false" spacing="5.0" />
                   <Label fx:id="current" />
+                  <HBox alignment="TOP_CENTER" spacing="5.0" VBox.vgrow="NEVER">
+                     <children>
+                        <ScrollPane fx:id="usrs" fitToHeight="true" fitToWidth="true" hbarPolicy="ALWAYS" maxWidth="1.7976931348623157E308" vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
+                           <content>
+                              <HBox fx:id="users" alignment="CENTER" maxWidth="-Infinity" spacing="5.0" />
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </HBox>
                </children>
             </VBox>
             <ScrollPane fx:id="notes" fitToWidth="true" hbarPolicy="NEVER" prefHeight="320.0" prefWidth="320.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                <content>
-                  <VBox fx:id="msgs" alignment="CENTER" focusTraversable="true" snapToPixel="false" spacing="10.0">
+                  <VBox fx:id="msgs" alignment="CENTER" focusTraversable="true" prefHeight="0.0" prefWidth="313.0" snapToPixel="false" spacing="10.0">
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </padding>
                   </VBox>
                </content>
             </ScrollPane>
-            <HBox fx:id="mess" alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="NEVER">
+            <HBox fx:id="mess" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" VBox.vgrow="NEVER">
                <children>
-                  <TextField fx:id="msg" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="28.0" promptText="Enter your message..." HBox.hgrow="ALWAYS">
+                  <TextField fx:id="msg" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" promptText="Enter your message..." HBox.hgrow="ALWAYS">
                      <HBox.margin>
-                        <Insets right="10.0" />
+                        <Insets />
                      </HBox.margin>
                   </TextField>
-                  <Button fx:id="send" mnemonicParsing="false" onAction="#sendMess" text="SEND">
+                  <Button fx:id="add" mnemonicParsing="false" onAction="#addCompanion" styleClass="click" text="+" />
+                  <Button fx:id="send" mnemonicParsing="false" onAction="#sendMess" prefHeight="0.0" prefWidth="46.0" styleClass="click" text="&gt;">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Button>
                </children>
                <VBox.margin>
-                  <Insets left="10.0" right="10.0" />
+                  <Insets />
                </VBox.margin>
             </HBox>
          </children>
