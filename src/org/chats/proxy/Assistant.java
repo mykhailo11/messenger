@@ -1,6 +1,7 @@
 package org.chats.proxy;
 
 import org.chats.server.Status;
+import org.chats.messenger.Fields;
 import org.chats.server.Commands;
 import org.chats.server.Mongo;
 import org.chats.server.Responses;
@@ -27,6 +28,7 @@ public class Assistant{
     private Socket client;
     private ObjectInputStream in;
     private ObjectOutputStream out;
+    private boolean requested;
     
     /**
      * basic constructor
@@ -36,6 +38,7 @@ public class Assistant{
         client = c;
         streamInit();
         verified = false;
+        requested = false;
     }
     /**
      * Stream initialization
@@ -98,6 +101,7 @@ public class Assistant{
             }else{
                 System.out.println("Incorrect request");
             }
+            requested = false;
     }
     /**
      * Method verifies client as a messenger user
@@ -160,7 +164,9 @@ public class Assistant{
                 try{
                     out.writeObject(Responses.MESSAGE);
                     out.writeObject(m);
-                    mongo.updateData(m, Mongo.messUpdateState(MessState.DELIVERED), Mongo.MESSCOLL);
+                    if (!m.get(Fields.SENDER).equals(username)){
+                        mongo.updateData(m, Mongo.messUpdateState(MessState.DELIVERED), Mongo.MESSCOLL);
+                    }
                 }catch (IOException e){
                     connection = Status.OFFLINE;
                     System.out.println(e.getMessage());
@@ -214,6 +220,7 @@ public class Assistant{
                 intend = in.readObject();
             }while (Objects.isNull(intend));
             System.out.println("Got message: " + intend);
+            requested = true;
             process((String)intend);
         }catch (IOException e){
             connection = Status.OFFLINE;
@@ -227,7 +234,7 @@ public class Assistant{
      * client request. Should be implemented as a thread
      */
     public void checkForNew(){
-        if (verified){
+        if (verified && !requested){
             sendNew();
         }
         try{

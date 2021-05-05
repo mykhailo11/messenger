@@ -11,6 +11,8 @@ public class Unit {
     public Unit(Assistant a){
         listen = new Listener(a);
         note = new Notifier(a);
+    }
+    public void start(){
         listen.start();
         note.start();
     }

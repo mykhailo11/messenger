@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox alignment="TOP_CENTER" maxHeight="800.0" spacing="10.0" styleClass="body" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox fx:id="userForm" alignment="TOP_CENTER" maxHeight="800.0" maxWidth="800.0" spacing="10.0" VBox.vgrow="ALWAYS">
@@ -42,8 +41,8 @@
                         <Insets />
                      </HBox.margin>
                   </TextField>
-                  <Button fx:id="add" mnemonicParsing="false" onAction="#addCompanion" styleClass="click" text="+" />
-                  <Button fx:id="send" mnemonicParsing="false" onAction="#sendMess" prefHeight="0.0" prefWidth="46.0" styleClass="click" text="&gt;">
+                  <Button fx:id="add" alignment="CENTER" mnemonicParsing="false" onAction="#addCompanion" styleClass="click" text="+" textOverrun="CLIP" />
+                  <Button fx:id="send" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#sendMess" prefHeight="0.0" prefWidth="46.0" styleClass="click" text="&gt;">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>

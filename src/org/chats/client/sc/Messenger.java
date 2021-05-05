@@ -70,11 +70,7 @@ public class Messenger{
         return companions;
     }
     public ArrayList<Document> getPack(){
-
-        ArrayList<Document> res = new ArrayList<>(messages);
-
-        messages.forEach(mess -> mess.put(Fields.STATE, MessState.DELIVERED));
-        return res;
+        return messages;
     }
     /**
      * Method verifies user
@@ -105,11 +101,12 @@ public class Messenger{
                 if (Objects.isNull(messages)){
                     messages = new ArrayList<>();
                 }
-                messages.add(mess);
                 System.out.println("Sending message");
+                mess.put(Fields.STATE, MessState.QUEUED);
                 out.writeObject(Commands.ADDMESSAGE);
                 out.writeObject(mess);
                 out.flush();
+                messages.add(mess);
                 requested = true;
             }catch (IOException e){
                 System.out.println("Unable to send message");
@@ -142,6 +139,9 @@ public class Messenger{
         try{
             while (!((String)in.readObject()).equals(Responses.PACKEND)){
                 Document mess = (Document)in.readObject();
+                if (mess.get(Fields.SENDER).equals(username) || hard){
+                    mess.put(Fields.STATE, MessState.DELIVERED);
+                }
                 messages.add(mess);
             }
         }catch (IOException e){

@@ -47,16 +47,21 @@ public class Accessor {
             try{
                 //This limit is optional
                 if (connected.size() < 10){
+
+                    Unit u;
+
                     System.out.println("Checking for clients");
-                    connected.add(new Unit(new Assistant(access.accept()))); 
+                    u = new Unit(new Assistant(access.accept()));
+                    connected.add(u);
+                     u.start();
                 }
+                checkForLazyUnits(); 
             }catch (IOException e){
                 System.out.println("Unable to get clients (server is possibly closed)");
                 end();
                 break;
             }
             //Checking for lazy assistants and punishing them
-            checkForLazyUnits(); 
         }
     }
     /**
@@ -66,7 +71,7 @@ public class Accessor {
         for (Unit u : connected) {
             if (!u.isAlive()){
                 System.out.println("Lazy unit detected");
-                connected.remove(connected.indexOf(u));
+                connected.remove(u);
             }
         }
     }

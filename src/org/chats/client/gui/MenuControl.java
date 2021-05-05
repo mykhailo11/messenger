@@ -1,6 +1,7 @@
 package org.chats.client.gui;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import org.chats.client.sc.Messenger;
 import org.chats.client.sc.Subscriber;
 import javafx.fxml.FXML;
@@ -9,18 +10,23 @@ import javafx.scene.layout.HBox;
 import javafx.application.Platform;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.text.TextFlow;
+import javafx.util.Duration;
 import javafx.scene.text.Text;
 import org.bson.Document;
 import org.chats.messenger.Fields;
+import org.chats.server.MessState;
+import javafx.animation.TranslateTransition;
 
 public class MenuControl implements Subscriber{
     
     private Messenger messenger;
     private Listener listen;
+    private final TranslateTransition transl = new TranslateTransition();
     @FXML
     private Label current;
     @FXML
@@ -31,8 +37,13 @@ public class MenuControl implements Subscriber{
     private Button send;
     @FXML
     private TextField msg;
+    @FXML
+    private ScrollPane notes;
 
     public MenuControl(Messenger mess){
+        transl.setDuration(Duration.millis(300));
+        transl.setFromY(200);
+        transl.setToY(0);
         messenger = mess;
         messenger.getMessages();
         listen = new Listener(messenger, this);
@@ -42,7 +53,6 @@ public class MenuControl implements Subscriber{
     public void sendMess(){
         if (!current.getText().isEmpty() && !msg.getText().isEmpty()){
             messenger.sendMessage(new Document().append(Fields.SENDER, messenger.getUsername()).append(Fields.RECIEVER, current.getText()).append(Fields.CONTENT, msg.getText()).append(Fields.DATE, "0/0/0"));
-            showMessages();
         }
     }
     @FXML
@@ -101,6 +111,10 @@ public class MenuControl implements Subscriber{
             }
             area.getChildren().add(content);
             texts.add(area);
+            if (mess.get(Fields.STATE).equals(MessState.QUEUED)){
+                transl.setNode(area);
+                mess.put(Fields.STATE, MessState.DELIVERED);
+            }
         });
         return texts;
     }
@@ -124,7 +138,14 @@ public class MenuControl implements Subscriber{
 
         Platform.runLater(() -> {
             msgs.getChildren().clear();
+            transl.setNode(null);
             designBlocks(getChat(messages)).forEach(area -> msgs.getChildren().add(area));
+            Platform.runLater(() -> {
+                if (!Objects.isNull(transl.getNode())){
+                    notes.setVvalue(notes.getVmax());
+                    transl.play();
+                }
+            });
         });
     }
 }
