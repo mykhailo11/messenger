@@ -19,15 +19,11 @@
                </VBox.margin>
                <children>
                   <Label fx:id="current" />
-                  <HBox alignment="TOP_CENTER" spacing="5.0" VBox.vgrow="NEVER">
-                     <children>
-                        <ScrollPane fx:id="usrs" fitToHeight="true" fitToWidth="true" hbarPolicy="ALWAYS" maxWidth="1.7976931348623157E308" vbarPolicy="NEVER" HBox.hgrow="ALWAYS">
-                           <content>
-                              <HBox fx:id="users" alignment="CENTER" maxWidth="-Infinity" spacing="5.0" />
-                           </content>
-                        </ScrollPane>
-                     </children>
-                  </HBox>
+                  <ScrollPane fx:id="usrs" fitToHeight="true" hbarPolicy="ALWAYS" vbarPolicy="NEVER">
+                     <content>
+                        <HBox fx:id="users" alignment="CENTER" maxWidth="-Infinity" spacing="5.0" />
+                     </content>
+                  </ScrollPane>
                </children>
             </VBox>
             <ScrollPane fx:id="notes" fitToWidth="true" hbarPolicy="NEVER" prefHeight="320.0" prefWidth="320.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
