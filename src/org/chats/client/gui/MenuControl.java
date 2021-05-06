@@ -5,9 +5,12 @@ import java.util.Objects;
 import org.chats.client.sc.Messenger;
 import org.chats.client.sc.Subscriber;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import org.chats.client.sc.Listener;
 import javafx.scene.layout.HBox;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.ScrollPane;
@@ -45,7 +48,6 @@ public class MenuControl implements Subscriber{
         transl.setFromY(200);
         transl.setToY(0);
         messenger = mess;
-        messenger.getMessages();
         listen = new Listener(messenger, this);
         listen.start();
     }
@@ -53,6 +55,7 @@ public class MenuControl implements Subscriber{
     public void sendMess(){
         if (!current.getText().isEmpty() && !msg.getText().isEmpty()){
             messenger.sendMessage(new Document().append(Fields.SENDER, messenger.getUsername()).append(Fields.RECIEVER, current.getText()).append(Fields.CONTENT, msg.getText()).append(Fields.DATE, "0/0/0"));
+            msg.clear();
         }
     }
     @FXML
@@ -65,6 +68,7 @@ public class MenuControl implements Subscriber{
             if (!comps.contains(comp) && !comp.equals(messenger.getUsername()) && !comp.isEmpty()){
                 messenger.getCompanions().add(comp);
                 users.getChildren().add(designIcon(comp));
+                msg.clear();
             }
         });
     }
@@ -91,28 +95,32 @@ public class MenuControl implements Subscriber{
         });
         return icon;
     }
-    private ArrayList<TextFlow> designBlocks(ArrayList<Document> messages){
+    private ArrayList<HBox> designBlocks(ArrayList<Document> messages){
         
-        ArrayList<TextFlow> texts = new ArrayList<>();
+        ArrayList<HBox> texts = new ArrayList<>();
 
         messages.forEach(mess -> {
             
             Text content = new Text((String)mess.get(Fields.CONTENT));
-            TextFlow area = new TextFlow();
+            TextFlow block = new TextFlow();
+            HBox area = new HBox();
             
             if (content.getText().length() <= 4){
                 content.getStyleClass().add("short");
             }
-            area.getStyleClass().add("msg");
+            block.getStyleClass().add("msg");
             if (mess.get(Fields.SENDER).equals(current.getText())){
-                area.getStyleClass().add("s");
+                block.getStyleClass().add("s");
+                area.setAlignment(Pos.CENTER_LEFT);
             }else if (mess.get(Fields.RECIEVER).equals(current.getText())){
-                area.getStyleClass().add("r");
+                block.getStyleClass().add("r");
+                area.setAlignment(Pos.CENTER_RIGHT);
             }
-            area.getChildren().add(content);
+            block.getChildren().add(content);
+            area.getChildren().add(block);
             texts.add(area);
             if (mess.get(Fields.STATE).equals(MessState.QUEUED)){
-                transl.setNode(area);
+                transl.setNode(block);
                 mess.put(Fields.STATE, MessState.DELIVERED);
             }
         });
@@ -139,11 +147,18 @@ public class MenuControl implements Subscriber{
         Platform.runLater(() -> {
             msgs.getChildren().clear();
             transl.setNode(null);
-            designBlocks(getChat(messages)).forEach(area -> msgs.getChildren().add(area));
-            Platform.runLater(() -> {
+            designBlocks(getChat(messages)).forEach(area -> {
+                msgs.getChildren().add(area);
+                //really complex thing but it worth it
+                area.widthProperty().addListener(new ChangeListener<Number>(){
+                    @Override
+                    public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue){
+                        ((TextFlow)area.getChildren().get(0)).setPrefWidth(0.9 * (double)newValue);
+                    }
+                });
                 if (!Objects.isNull(transl.getNode())){
-                    notes.setVvalue(notes.getVmax());
-                    transl.play();
+                    Platform.runLater(() -> notes.setVvalue(notes.getVmax()));
+                    Platform.runLater(() -> transl.play());
                 }
             });
         });

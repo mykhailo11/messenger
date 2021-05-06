@@ -63,7 +63,6 @@ Button:hover{
     -fx-text-fill: rgb(224, 166, 89);
 }
 .msg{
-    -fx-text-fill: rgb(255, 255, 255);
     -fx-padding: 10px;
     -fx-background-radius: 10px 10px 10px 10px;
 }

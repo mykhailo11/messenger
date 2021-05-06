@@ -119,6 +119,9 @@ public class Assistant{
             out.writeObject(Responses.VERIFICATION);
             out.writeObject(verified);
             out.flush();
+            if (verified){
+                sendMessages();
+            }
         }catch (ClassNotFoundException e){
             verified = false;
             System.out.println("Unknown protocol detected");
@@ -186,7 +189,7 @@ public class Assistant{
 
         ArrayList<Document> newmess = mongo.getData(Mongo.undeliveredMessages(username), Mongo.MESSCOLL);
 
-        if (!newmess.isEmpty()){
+        if (!newmess.isEmpty() && !Objects.isNull(newmess)){
             try{
                 System.out.println("Extra");
                 out.writeObject(Responses.NEWMESSPACK);
