@@ -1,48 +1,54 @@
 package org.chats.client.gui;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import org.chats.client.sc.Messenger;
 import java.io.IOException;
 
-public class LoginControl {
+public class SignUpControl {
     
     private Messenger messenger;
     @FXML
-    private Button signin;
+    private Button apply;
+    @FXML
+    private Button back;
     @FXML
     private TextField username;
     @FXML
     private TextField password;
     @FXML
+    private TextField phone;
+    @FXML
     private Label state;
 
-    public LoginControl(Messenger mess){
+    public SignUpControl(Messenger mess){
         messenger = mess;
     }
     @FXML
-    public void signIn(){
-        
+    public void applyForm(){
+
         String user = username.getText();
         String pass = password.getText();
+        String num = phone.getText();
 
         password.clear();
-        if (!user.isEmpty() && !pass.isEmpty()){
-            state.setText("Verifying...");
-            messenger.verify(user, pass);
+        phone.clear();
+        if (!user.isEmpty() && !pass.isEmpty() && !num.isEmpty()){
+            state.setText("Registering...");
+            messenger.register(user, pass, num);
             messenger.listener();
             if (messenger.isVerified()){
             
-                Stage stage = (Stage)signin.getScene().getWindow();
+                Stage stage = (Stage)apply.getScene().getWindow();
                 Scene scene;
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/fxml/userMenu.fxml"));
     
-                state.setText("Verified!");
+                state.setText("Success! Welcome");
                 try{
 
                     double width = stage.getWidth();
@@ -60,28 +66,25 @@ public class LoginControl {
                     System.out.println(e.getMessage());
                 }
             }else{
-                state.setText("Invalid info");
+                state.setText("Something went wrong");
             }
-        }else{
-            state.setText("Fill the blanks");
         }
     }
     @FXML
-    public void signUp(){
-
-        Stage stage = (Stage)signin.getScene().getWindow();
+    public void goBack(){
+        Stage stage = (Stage)back.getScene().getWindow();
         Scene scene;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/fxml/signUpScene.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/res/fxml/loginScene.fxml"));
 
         try{
 
             double width = stage.getWidth();
             double height = stage.getHeight();
 
-            loader.setController(new SignUpControl(messenger));
+            loader.setController(new LoginControl(messenger));
             scene = new Scene(loader.load());
             scene.getStylesheets().add(getClass().getResource("/res/css/global.css").toExternalForm());
-            scene.getStylesheets().add(getClass().getResource("/res/css/signUpScene.css").toExternalForm());
+            scene.getStylesheets().add(getClass().getResource("/res/css/loginScene.css").toExternalForm());
             stage.setScene(scene);
             stage.setWidth(width);
             stage.setHeight(height);

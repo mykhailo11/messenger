@@ -73,6 +73,24 @@ public class Messenger{
         return messages;
     }
     /**
+     * Method registers new user in the system
+     */
+    //THE METHOD IS EXPERIMENTAL
+    public void register(String uname, String pass, String phone){
+        try{
+            System.out.println("Registering user");
+            out.writeObject(Commands.ADDUSER);
+            username = uname;
+            out.writeObject(username);
+            out.writeObject(pass);
+            out.writeObject(phone);
+            out.flush();
+            requested = true;
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    /**
      * Method verifies user
      * @param uname - username
      * @param pass - password
@@ -188,7 +206,7 @@ public class Messenger{
             }catch (ClassNotFoundException e){
                 System.out.println("Cannot get message index");
             }
-        }else if (response.equals(Responses.VERIFICATION)){
+        }else if (response.equals(Responses.VERIFICATION) || response.equals(Responses.REGISTRATION)){
             setVerified();
         }
     }

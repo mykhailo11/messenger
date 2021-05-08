@@ -2,6 +2,7 @@ package org.chats.proxy;
 
 import org.chats.server.Status;
 import org.chats.messenger.Fields;
+import org.chats.messenger.User;
 import org.chats.server.Commands;
 import org.chats.server.Mongo;
 import org.chats.server.Responses;
@@ -83,7 +84,7 @@ public class Assistant{
             if (intend.equals(Commands.VERIFY)){
                 verify();
             }else if (intend.equals(Commands.ADDUSER)){
-                //Not available yet
+                register();
             }else if (intend.equals(Commands.ADDMESSAGE) && verified){
                 addMessage();
             }else if (intend.equals(Commands.GETMESSAGES) && verified){
@@ -102,6 +103,31 @@ public class Assistant{
                 System.out.println("Incorrect request");
             }
             requested = false;
+    }
+    /**
+     * Method adds user to the system
+     */
+    //THE METHOD IS EXPERIMENTAL
+    private void register(){
+        try{
+            username = (String)in.readObject();
+            if (mongo.getData(Mongo.userQuery(username), Mongo.USERSCOLL).size() == 0){
+                mongo.addData(new Document().append(User.USERNAME, username).append(User.PASSWORD, (String)in.readObject()).append(User.PHONENUM, (String)in.readObject()), Mongo.USERSCOLL);
+                verified = mongo.getData(Mongo.userQuery(username), Mongo.USERSCOLL).size() == 1;
+                if (verified){
+                    mongo.updateData(Mongo.userQuery(username), Mongo.userUpdateState(Status.ONLINE), Mongo.USERSCOLL);
+                }
+            }
+            System.out.println(verified);
+            out.writeObject(Responses.REGISTRATION);
+            out.writeObject(verified);
+            out.flush();
+        }catch (ClassNotFoundException e){
+            System.out.println("Invalid info");
+        }catch (IOException e){
+            connection = Status.OFFLINE;
+            System.out.println(e.getMessage());
+        }
     }
     /**
      * Method verifies client as a messenger user
@@ -145,8 +171,10 @@ public class Assistant{
             if (res.size() == 1){
                 out.writeObject(Responses.ADDED);
                 out.writeObject(res.get(0).get("_id"));
-                out.flush();
+            }else{
+                out.writeObject(Responses.ERROR);
             }
+            out.flush();
         }catch (ClassNotFoundException e){
             System.out.println("Unknown protocol detected");
         }catch (IOException e){
@@ -189,7 +217,7 @@ public class Assistant{
 
         ArrayList<Document> newmess = mongo.getData(Mongo.undeliveredMessages(username), Mongo.MESSCOLL);
 
-        if (!newmess.isEmpty() && !Objects.isNull(newmess)){
+        if (!newmess.isEmpty()){
             try{
                 System.out.println("Extra");
                 out.writeObject(Responses.NEWMESSPACK);
