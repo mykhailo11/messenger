@@ -31,7 +31,7 @@ Button:hover{
     -fx-background-color: transparent;
 }
 #notes .viewport{
-    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-color: linear-gradient(to bottom,rgb(105, 62, 103), transparent);
     -fx-border-width: 0px 0px 0px 0px;
 }
 #usrs .viewport{
@@ -73,7 +73,7 @@ Button:hover{
     -fx-fill: rgb(255, 175, 155);
 }
 .r{
-    -fx-background-color: rgb(253, 113, 78);
+    -fx-background-color: rgb(253, 149, 123);
     -fx-text-alignment: left;
 }
 .r Text{
@@ -82,5 +82,5 @@ Button:hover{
 .short{
     -fx-fill: rgb(255, 255, 255);
     -fx-font-weight: 900;
-    -fx-font-size: 36;
+    -fx-font-size: 22;
 }
